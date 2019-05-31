@@ -2,46 +2,37 @@
 
 A bash script to generate git repository with dummy commits.
 
-##### Sample generated Repo
-
-```tree
-repo/
-├── .git/
-├── .gitignore
-├── 1
-├── 2
-├── 3
-├── 4
-├── 5
-└── drg.sh
-```
-
-##### Repo history _(messages are fetched from [whatthecommit](http://whatthecommit.com))_
-
-```bash
-* b3c4486 (HEAD -> master) Reinventing the wheel. Again.
-* 75c56da Shovelling coal into the server...
-* a52bc63 Oh no
-* 1e0753c another big bag of changes
-* e780d62 somebody keeps erasing my changes.
-* 69beab8 oops
-* c6da679 Removed code.
-* 9069455 I AM PUSHING.
-* f00f58a Initial commit
-```
-
 ## Usage
 
 ```bash
-./drg.sh [ -c <commits-count> ] [ -p <files-prefix> ]
+./drg.sh [ -b <branches-count> ] [ -c <commits-count> ] [ -p <files-prefix> ]
+```
+
+**Sample run:** _(messages are fetched from [whatthecommit](http://whatthecommit.com) automatically)_
+
+```console
+$ ./drg.sh -b 2 -c 3 -p X
+* 205e63e (br-2.0) --help3
+* 1cae97d I expected something different.
+* 3c43fb1 fix tpyo
+| * 00665ab (br-1.0) last minute fixes.
+| * 8513143 Who Let the Bugs Out??
+| * 7ebec1e Shovelling coal into the server...
+|/
+* 893026e (HEAD -> master) Initial commit
+
+$ git checkout br-1.0 && ls -a
+Switched to branch 'br-1.0'
+.git/  .gitignore  drg.sh  X-1  X-2  X-3
 ```
 
 ## Default Values
 
-| Variable        | Value |
-|:----------------|:-----:|
-| `commits_count` | `5`   |
-| `files_prefix`  | `""`  |
+| Variable         | Value                              |
+|:-----------------|:-----------------------------------|
+| `branches_count` | `0` (commit to `master` directly)  |
+| `commits_count`  | `5`                                |
+| `files_prefix`   | `""`                               |
 
 ## Collision Handling
 
@@ -50,16 +41,16 @@ If the script is used to generate commits in **existing files**, some of the com
 ```text
 [1]
 Date   : Fri, May 31, 2019  1:41:25 AM
-Author : Youssef Raafat <YoussefRaafatNasry@gmail.com>
+Author : User Name <user_email@gmail.com>
 Branch : master
 
 [2]
 Date   : Fri, May 31, 2019  1:41:30 AM
-Author : Youssef Raafat <YoussefRaafatNasry@gmail.com>
+Author : User Name <user_email@gmail.com>
 Branch : master
 
 [3]
 Date   : Fri, May 31, 2019  1:41:36 AM
-Author : Youssef Raafat <YoussefRaafatNasry@gmail.com>
+Author : User Name <user_email@gmail.com>
 Branch : master
 ```
