@@ -5,17 +5,19 @@
 # Default Values
 branches_count=0
 merge=false
+delete=false
 commits_count=5
 files_prefix=""
 
 # Overwrite defaults with options' arguments
-while getopts "b:mc:p:" opt; do
+while getopts "b:mdc:p:" opt; do
   case $opt in
     b) branches_count=$OPTARG ;;
     m) merge=true ;;
+    d) delete=true ;;
     c) commits_count=$OPTARG ;;
     p) files_prefix="${OPTARG}-" ;;
-    *) echo "Usage: ${0} [ -b <branches-count> ] [ -m (merge) ] [ -c <commits-count> ] [ -p <files-prefix> ]" ;;
+    *) echo "Usage: ${0} [ -b <branches-count> ] [ -m (merge) ] [ -d (delete branches after merge) ] [ -c <commits-count> ] [ -p <files-prefix> ]" ;;
   esac
 done
 
@@ -68,6 +70,12 @@ while
     echo -ne "Merging [${current_branch}] into [${src_branch}]...\r"
     git checkout -q ${src_branch}
     git merge -q --no-ff --no-edit ${current_branch}
+    echo -ne "\033[K"
+  fi
+
+  if ${delete}; then
+    git branch -q -D ${current_branch}
+    echo -ne "Deleted [${current_branch}]...\r"
     echo -ne "\033[K"
   fi
 

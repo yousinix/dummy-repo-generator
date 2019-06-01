@@ -5,7 +5,7 @@ A bash script to generate git repository with dummy commits.
 ## Usage
 
 ```bash
-./drg.sh [ -b <branches-count> ] [ -m (merge) ] [ -c <commits-count> ] [ -p <files-prefix> ]
+./drg.sh [ -b <branches-count> ] [ -m (merge) ] [ -d (delete branches after merge) ] [ -c <commits-count> ] [ -p <files-prefix> ]
 ```
 
 **Sample run:** _(messages are fetched from [whatthecommit](http://whatthecommit.com) automatically)_
@@ -36,6 +36,7 @@ $ ls -a
 |:-----------------|:-----------------------------------|
 | `branches_count` | `0` (commit to `master` directly)  |
 | `merge`          | `false`                            |
+| `delete`         | `false`                            |
 | `commits_count`  | `5`                                |
 | `files_prefix`   | `""`                               |
 
