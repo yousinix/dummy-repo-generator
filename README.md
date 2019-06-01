@@ -5,13 +5,36 @@ A bash script to generate git repository with dummy commits.
 ## Usage
 
 ```bash
-./drg.sh [ -b <branches-count> ] [ -m (merge) ] [ -d (delete branches after merge) ] [ -c <commits-count> ] [ -p <files-prefix> ]
+./drg.sh [ -b <branches-count> ] [ -m (merge) ]
+         [ -d (delete branches after merge) ]
+         [ -c <commits-count> ] [ -p <files-prefix> ]
 ```
 
 **Sample run:** _(messages are fetched from [whatthecommit](http://whatthecommit.com) automatically)_
 
 ```console
 $ ./drg.sh -b 2 -m -c 3 -p X
+Init   :: initialized git repository
+Create :: .gitignore file
+Create :: .gitattributes file
+Commit :: Initial on [master]
+Branch :: 1 out of 2
+Create :: [br-1.0] from [master]
+Commit :: 1 out of 3 on [br-1.0]
+Commit :: 2 out of 3 on [br-1.0]
+Commit :: 3 out of 3 on [br-1.0]
+Switch :: checkout to [master]
+Merge  :: [br-1.0] into [master]
+Branch :: 2 out of 2
+Create :: [br-2.0] from [master]
+Commit :: 1 out of 3 on [br-2.0]
+Commit :: 2 out of 3 on [br-2.0]
+Commit :: 3 out of 3 on [br-2.0]
+Switch :: checkout to [master]
+Merge  :: [br-2.0] into [master]
+Switch :: [master]
+Graph  ::
+---------
 *   3e7d181 (HEAD -> master) Merge branch 'br-2.0'
 |\
 | * 9f03d5b (br-2.0) fix tpyo

@@ -17,20 +17,26 @@ while getopts "b:mdc:p:" opt; do
     d) delete=true ;;
     c) commits_count=$OPTARG ;;
     p) files_prefix="${OPTARG}-" ;;
-    *) echo "Usage: ${0} [ -b <branches-count> ] [ -m (merge) ] [ -d (delete branches after merge) ] [ -c <commits-count> ] [ -p <files-prefix> ]" ;;
+    *) echo "usage: ./drg.sh [ -b <branches-count> ] [ -m (merge) ]
+                [ -d (delete branches after merge) ]
+                [ -c <commits-count> ] [ -p <files-prefix> ]"
+       exit 0
+       ;;
   esac
 done
 
 # [Pre Generation]
-if ${merge} && [ ! -e '.gitattributes' ]; then
-  echo -n '* merge=union' >> .gitattributes
-fi
-
 if [ ! -d '.git' ]; then
+  echo "Init   :: initialized git repository"
   git init -q
+  echo "Create :: .gitignore file"
   echo -ne "#Ignore script\r\n" >> .gitignore
   echo -ne "${0##*/}\r\n" >> .gitignore
+  echo "Create :: .gitattributes file"
+  echo -n '* merge=union' >> .gitattributes
+  echo "Commit :: Initial on [master] "
   git add .gitignore
+  git add .gitattributes
   git commit -q -m 'Initial commit'
 fi
 
@@ -40,10 +46,13 @@ bi=1
 while
 
   if [ ${branches_count} -ne 0 -a ${bi} -le ${branches_count} ]; then
+    echo "Branch :: $bi out of $branches_count"
     next_branch="br-${bi}.0"
       if [ `git branch --list ${next_branch}` ]; then
+        echo "Switch :: [${next_branch}]"
         git checkout -q ${next_branch}
       else
+        echo "Create :: [${next_branch}] from [${src_branch}]"
         git checkout -q -b ${next_branch} ${src_branch}
       fi
     ((bi++))
@@ -52,7 +61,7 @@ while
   ci=1
   current_branch=$(git rev-parse --abbrev-ref HEAD)
   while [ ${ci} -le ${commits_count} ]; do
-    echo -ne "[${current_branch}] commit $ci out of $commits_count\r"
+    echo "Commit :: ${ci} out of ${commits_count} on [${current_branch}]"
     file_name="${files_prefix}${ci}"
     if [ -f ${file_name} ]; then
       commit_number=$(wc -l < ${file_name})
@@ -66,17 +75,18 @@ while
     ((ci++))
   done
 
-  if ${merge}; then
-    echo -ne "Merging [${current_branch}] into [${src_branch}]...\r"
-    git checkout -q ${src_branch}
-    git merge -q --no-ff --no-edit ${current_branch}
-    echo -ne "\033[K"
-  fi
+  if [ ${branches_count} -ne 0 ]; then
+    if ${merge}; then
+      echo "Switch :: checkout to [${src_branch}]"
+      git checkout -q ${src_branch}
+      echo "Merge  :: [${current_branch}] into [${src_branch}]"
+      git merge -q --no-ff --no-edit ${current_branch}
+    fi
 
-  if ${delete}; then
-    git branch -q -D ${current_branch}
-    echo -ne "Deleted [${current_branch}]...\r"
-    echo -ne "\033[K"
+    if ${delete}; then
+      echo "Delete :: [${current_branch}]"
+      git branch -q -D ${current_branch}
+    fi
   fi
 
   [ ${bi} -le ${branches_count} ]
@@ -84,6 +94,10 @@ while
 do : ; done;
 
 # [Post Generation]
-git checkout -q ${src_branch}
-echo -ne "\033[K" # Erase to end of line
+if [ ${branches_count} -ne 0 ]; then
+  echo "Switch :: [${src_branch}]"
+  git checkout -q ${src_branch}
+fi
+echo "Graph  ::"
+echo "---------"
 git log --oneline --graph --all --decorate
