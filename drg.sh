@@ -4,20 +4,26 @@
 
 # Default Values
 branches_count=0
+merge=false
 commits_count=5
 files_prefix=""
 
 # Overwrite defaults with options' arguments
-while getopts "b:c:p:" opt; do
+while getopts "b:mc:p:" opt; do
   case $opt in
     b) branches_count=$OPTARG ;;
+    m) merge=true ;;
     c) commits_count=$OPTARG ;;
     p) files_prefix="${OPTARG}-" ;;
-    *) echo "Usage: ${0} [ -b <branches-count> ] [ -c <commits-count> ] [ -p <files-prefix> ]" ;;
+    *) echo "Usage: ${0} [ -b <branches-count> ] [ -m (merge) ] [ -c <commits-count> ] [ -p <files-prefix> ]" ;;
   esac
 done
 
 # [Pre Generation]
+if ${merge} && [ ! -e '.gitattributes' ]; then
+  echo -n '* merge=union' >> .gitattributes
+fi
+
 if [ ! -d '.git' ]; then
   git init -q
   echo -ne "#Ignore script\r\n" >> .gitignore
@@ -27,9 +33,7 @@ if [ ! -d '.git' ]; then
 fi
 
 # [Generation]
-author="$(git config user.name) <$(git config user.email)>" 
 src_branch=$(git rev-parse --abbrev-ref HEAD)
-
 bi=1
 while
 
@@ -49,21 +53,23 @@ while
     echo -ne "[${current_branch}] commit $ci out of $commits_count\r"
     file_name="${files_prefix}${ci}"
     if [ -f ${file_name} ]; then
-      commit_number=$(($(wc -l < ${file_name}) / 5 + 1))
+      commit_number=$(wc -l < ${file_name})
+      ((commit_number++))
     else
       commit_number=1
     fi
-    {
-      echo -ne "[${commit_number}]\r\n"
-      echo -ne "Date   : $(date)\r\n"
-      echo -ne "Author : ${author}\r\n"
-      echo -ne "Branch : ${current_branch}\r\n"
-      echo -ne "\r\n"
-    } >> "${file_name}"
+    echo -ne "[${current_branch}](${commit_number}) $(date +"%D %T")\r\n" >> "${file_name}"
     git add "${file_name}"
     git commit -q -m "$(curl -s http://whatthecommit.com/index.txt)"
     ((ci++))
   done
+
+  if ${merge}; then
+    echo -ne "Merging [${current_branch}] into [${src_branch}]...\r"
+    git checkout -q ${src_branch}
+    git merge -q --no-ff --no-edit ${current_branch}
+    echo -ne "\033[K"
+  fi
 
   [ ${bi} -le ${branches_count} ]
 
