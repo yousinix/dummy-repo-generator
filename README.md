@@ -5,15 +5,16 @@ A bash script to generate git repository with dummy commits.
 ## Usage
 
 ```bash
-./drg.sh [ -b <branches-count> ] [ -m (merge) ]
+./drg.sh [ -b <branches-number> ] [ -m (merge) ]
          [ -d (delete branches after merge) ]
-         [ -c <commits-count> ] [ -p <files-prefix> ]
+         [ -n <commits-number> ] [ -p <files-prefix> ]
+         [ -c (clear repository completely) ]
 ```
 
 **Sample run:** _(messages are fetched from [whatthecommit](http://whatthecommit.com) automatically)_
 
 ```console
-$ ./drg.sh -b 2 -m -c 3 -p X
+$ ./drg.sh -b 2 -m -n 3 -p X
 Init   :: initialized git repository
 Create :: .gitignore file
 Create :: .gitattributes file
@@ -55,13 +56,13 @@ $ ls -a
 
 ## Default Values
 
-| Variable         | Value                              |
-|:-----------------|:-----------------------------------|
-| `branches_count` | `0` (commit to `master` directly)  |
-| `merge`          | `false`                            |
-| `delete`         | `false`                            |
-| `commits_count`  | `5`                                |
-| `files_prefix`   | `""`                               |
+| Variable          | Value                              |
+|:------------------|:-----------------------------------|
+| `branches_number` | `0` (commit to `master` directly)  |
+| `merge`           | `false`                            |
+| `delete`          | `false`                            |
+| `commits_number`  | `5`                                |
+| `files_prefix`    | `""`                               |
 
 ## Collision Handling
 

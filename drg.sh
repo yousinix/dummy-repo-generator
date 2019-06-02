@@ -3,23 +3,34 @@
 # Get latest at : https://github.com/YoussefRaafatNasry/dummy-repo-generator
 
 # Default Values
-branches_count=0
+branches_number=0
 merge=false
 delete=false
-commits_count=5
+commits_number=5
 files_prefix=""
 
 # Overwrite defaults with options' arguments
-while getopts "b:mdc:p:" opt; do
+while getopts "b:mdn:p:c" opt; do
   case $opt in
-    b) branches_count=$OPTARG ;;
+    b) branches_number=$OPTARG ;;
     m) merge=true ;;
     d) delete=true ;;
-    c) commits_count=$OPTARG ;;
+    n) commits_number=$OPTARG ;;
     p) files_prefix="${OPTARG}-" ;;
-    *) echo "usage: ./drg.sh [ -b <branches-count> ] [ -m (merge) ]
+    c) if [ -d '.git' ]; then
+        echo "Clear  :: in progress..."
+        git ls-files -z | xargs -0 rm -f
+        rm -rf .git
+        echo "Clear  :: done"
+       else
+        echo "Clear  :: failed (not a git repo)"
+       fi
+       exit 0
+       ;;
+    *) echo "usage: ./drg.sh [ -b <branches-number> ] [ -m (merge) ]
                 [ -d (delete branches after merge) ]
-                [ -c <commits-count> ] [ -p <files-prefix> ]"
+                [ -n <commits-number> ] [ -p <files-prefix> ]
+                [ -c (clear repository completely) ]"
        exit 0
        ;;
   esac
@@ -45,8 +56,8 @@ src_branch=$(git rev-parse --abbrev-ref HEAD)
 bi=1
 while
 
-  if [ ${branches_count} -ne 0 -a ${bi} -le ${branches_count} ]; then
-    echo "Branch :: $bi out of $branches_count"
+  if [ ${branches_number} -ne 0 -a ${bi} -le ${branches_number} ]; then
+    echo "Branch :: ${bi} out of ${branches_number}"
     next_branch="br-${bi}.0"
       if [ `git branch --list ${next_branch}` ]; then
         echo "Switch :: [${next_branch}]"
@@ -60,8 +71,8 @@ while
 
   ci=1
   current_branch=$(git rev-parse --abbrev-ref HEAD)
-  while [ ${ci} -le ${commits_count} ]; do
-    echo "Commit :: ${ci} out of ${commits_count} on [${current_branch}]"
+  while [ ${ci} -le ${commits_number} ]; do
+    echo "Commit :: ${ci} out of ${commits_number} on [${current_branch}]"
     file_name="${files_prefix}${ci}"
     if [ -f ${file_name} ]; then
       commit_number=$(wc -l < ${file_name})
@@ -75,7 +86,7 @@ while
     ((ci++))
   done
 
-  if [ ${branches_count} -ne 0 ]; then
+  if [ ${branches_number} -ne 0 ]; then
     if ${merge}; then
       echo "Switch :: checkout to [${src_branch}]"
       git checkout -q ${src_branch}
@@ -89,12 +100,12 @@ while
     fi
   fi
 
-  [ ${bi} -le ${branches_count} ]
+  [ ${bi} -le ${branches_number} ]
 
 do : ; done;
 
 # [Post Generation]
-if [ ${branches_count} -ne 0 ]; then
+if [ ${branches_number} -ne 0 ]; then
   echo "Switch :: [${src_branch}]"
   git checkout -q ${src_branch}
 fi
