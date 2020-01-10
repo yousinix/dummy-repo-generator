@@ -6,15 +6,17 @@
 branches_number=0
 merge=false
 delete=false
+draw_graph=true
 commits_number=5
 files_prefix=""
 
 # Overwrite defaults with options' arguments
-while getopts "b:mdn:p:c" opt; do
+while getopts "b:mdgn:p:c" opt; do
   case $opt in
     b) branches_number=$OPTARG ;;
     m) merge=true ;;
     d) delete=true ;;
+    g) draw_graph=false ;;
     n) commits_number=$OPTARG ;;
     p) files_prefix="${OPTARG}-" ;;
     c) if [ -d '.git' ]; then
@@ -30,7 +32,8 @@ while getopts "b:mdn:p:c" opt; do
     *) echo "usage: ./drg.sh [ -b <branches-number> ] [ -m (merge) ]
                 [ -d (delete branches after merge) ]
                 [ -n <commits-number> ] [ -p <files-prefix> ]
-                [ -c (clear repository completely) ]"
+                [ -c (clear repository completely) ]
+                [ -g (omit drawing git graph) ]
        exit 0
        ;;
   esac
@@ -109,6 +112,7 @@ if [ ${branches_number} -ne 0 ]; then
   echo "Switch :: [${src_branch}]"
   git checkout -q ${src_branch}
 fi
-echo "Graph  ::"
-echo "---------"
-git log --oneline --graph --all --decorate
+
+if ${draw_graph}; then
+  git log --oneline --graph --all --decorate 
+fi

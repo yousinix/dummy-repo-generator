@@ -9,6 +9,7 @@ A bash script to generate git repository with dummy commits.
          [ -d (delete branches after merge) ]
          [ -n <commits-number> ] [ -p <files-prefix> ]
          [ -c (clear repository completely) ]
+         [ -g (omit drawing git graph) ]
 ```
 
 **Sample run:** _(messages are fetched from [whatthecommit](http://whatthecommit.com) automatically)_
@@ -56,13 +57,14 @@ $ ls -a
 
 ## Default Values
 
-| Variable          | Value                              |
-|:------------------|:-----------------------------------|
-| `branches_number` | `0` (commit to `master` directly)  |
-| `merge`           | `false`                            |
-| `delete`          | `false`                            |
-| `commits_number`  | `5`                                |
-| `files_prefix`    | `""`                               |
+| Variable          | Value                             |
+| :---------------- | :-------------------------------- |
+| `branches_number` | `0` (commit to `master` directly) |
+| `merge`           | `false`                           |
+| `delete`          | `false`                           |
+| `commits_number`  | `5`                               |
+| `files_prefix`    | `""`                              |
+| `draw_graph`      | `true`                            |
 
 ## Collision Handling
 
