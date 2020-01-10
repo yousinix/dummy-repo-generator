@@ -6,16 +6,18 @@
 branches_number=0
 merge=false
 delete=false
+overwrite=false
 draw_graph=true
 commits_number=5
 files_prefix=""
 
 # Overwrite defaults with options' arguments
-while getopts "b:mdgn:p:c" opt; do
+while getopts "b:mdogn:p:c" opt; do
   case $opt in
     b) branches_number=$OPTARG ;;
     m) merge=true ;;
     d) delete=true ;;
+    o) overwrite=true ;;
     g) draw_graph=false ;;
     n) commits_number=$OPTARG ;;
     p) files_prefix="${OPTARG}-" ;;
@@ -34,6 +36,7 @@ while getopts "b:mdgn:p:c" opt; do
                 [ -n <commits-number> ] [ -p <files-prefix> ]
                 [ -c (clear repository completely) ]
                 [ -g (omit drawing git graph) ]
+                [ -o (overwrite existing files instead of appending) ]"
        exit 0
        ;;
   esac
@@ -83,9 +86,14 @@ while
     else
       commit_number=1
     fi
-    echo -ne "[${current_branch}](${commit_number}) $(date +"%D %T")\r\n" > "${file_name}"
+    output="[${current_branch}](${commit_number}) $(date +"%D %T")\r\n"
+    if ${overwrite}; then
+      echo -ne "$output" > "${file_name}"
+    else 
+      echo -ne "$output" >> "${file_name}" # append 
+    fi
     git add "${file_name}"
-    git commit -q -m "$(wget -qO - http://whatthecommit.com/index.txt)"
+    git commit -q -m "$(wget -qO - www.whatthecommit.com/index.txt)"
     ((ci++))
   done
 

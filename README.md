@@ -10,6 +10,8 @@ A bash script to generate git repository with dummy commits.
          [ -n <commits-number> ] [ -p <files-prefix> ]
          [ -c (clear repository completely) ]
          [ -g (omit drawing git graph) ]
+         [ -o (overwrite existing files instead of appending) ]
+
 ```
 
 **Sample run:** _(messages are fetched from [whatthecommit](http://whatthecommit.com) automatically)_
@@ -65,10 +67,13 @@ $ ls -a
 | `commits_number`  | `5`                               |
 | `files_prefix`    | `""`                              |
 | `draw_graph`      | `true`                            |
+| `overwrite`       | `false`                           |
 
 ## Collision Handling
 
 If the script is used to generate commits in **existing files**, some of the commit data is just **appended** to the file instead of **overwriting** the whole file.
+
+**Note**: You can enable overwriting the files by using the `-o` option.
 
 ```text
 [br-1.0](1) 06/01/19 03:47:55
