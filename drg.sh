@@ -80,7 +80,7 @@ while
     else
       commit_number=1
     fi
-    echo -ne "[${current_branch}](${commit_number}) $(date +"%D %T")\r\n" >> "${file_name}"
+    echo -ne "[${current_branch}](${commit_number}) $(date +"%D %T")\r\n" > "${file_name}"
     git add "${file_name}"
     git commit -q -m "$(wget -qO - http://whatthecommit.com/index.txt)"
     ((ci++))
